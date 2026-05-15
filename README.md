@@ -198,7 +198,7 @@ python3 -m pip install -e '.[dev,progress]'
 
 ## License
 
-MIT
+MIT license. See the [LICENSE](LICENSE) file for more information.
 
 ## Experiment matrix renders
 
