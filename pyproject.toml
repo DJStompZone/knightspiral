@@ -32,6 +32,10 @@ packages = [{ include = "knightspiral" }]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.0"
+pytest-cov = "^7.1.0"
+pytest-benchmark = "^5.2.3"
+pyinstrument = "^5.1.2"
+allure-pytest = "^2.16.0"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
