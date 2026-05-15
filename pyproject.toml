@@ -1,17 +1,39 @@
 [project]
 name = "knightspiral"
 version = "0.1.0"
-description = ""
+description = "Simulate and render competing knight armies on an infinite spiral-numbered chessboard."
 authors = [
-    {name = "DJ Stomp",email = "85457381+DJStompZone@users.noreply.github.com"}
+    { name = "DJ Stomp", email = "85457381+DJStompZone@users.noreply.github.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
-dependencies = [
+license = "MIT"
+keywords = ["knight", "spiral", "simulation", "chess", "oeis", "numberphile", "raster"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
+dependencies = ["tqdm (>=4.67.3,<5.0.0)"]
+
+[project.optional-dependencies]
+progress = ["tqdm>=4.66"]
+
+[project.scripts]
+knightspiral = "knightspiral.cli:entrypoint"
 
 [tool.poetry]
-packages = [{include = "knightspiral"}]
+packages = [{ include = "knightspiral" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
