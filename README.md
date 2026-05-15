@@ -199,3 +199,35 @@ python3 -m pip install -e '.[dev,progress]'
 ## License
 
 MIT
+
+## Experiment matrix renders
+
+For larger comparison runs, use the bundled matrix runner. It renders each requested team count once per requested turn count, using equal-spaced HSV colors and a boot-scoped cache in the OS temp directory.
+
+```bash
+poetry run knightspiral-matrix --output-dir ../knightspiral-renders --resume
+```
+
+By default this runs 2 through 9 colors at 100, 1k, 10k, 100k, and 1m turns, writing files like:
+
+```text
+../knightspiral-renders/02-colors/knightspiral_02c_100.png
+../knightspiral-renders/04-colors/knightspiral_04c_10k.png
+../knightspiral-renders/09-colors/knightspiral_09c_1m.png
+```
+
+Useful options:
+
+```bash
+poetry run knightspiral-matrix --turns 100,1k,10k,100k,1m --color-counts 2-9 --output-dir ../renders --resume
+poetry run knightspiral-matrix --color-counts 3,4,5 --turns 10k,100k --grid-color '#DDDDDD'
+poetry run knightspiral-matrix --no-cache --output-dir ../uncached-renders
+```
+
+The runner also writes `palettes.json`, `matrix_results.csv`, and `matrix_results.jsonl` into the output directory.
+
+### Snapshot cache
+
+The matrix runner memoizes full simulation snapshots by team count and turn count. The rule state depends on the number of teams, not the display colors, so a cached 4-team simulation can be reused with any 4-color palette.
+
+By default, snapshots live under a boot-scoped directory inside the OS temp folder. That makes them reusable across repeated runs during the same boot without turning your project folder into a pickle landfill. Use `--cache-root` to choose a specific cache location, or `--no-cache` to disable it.

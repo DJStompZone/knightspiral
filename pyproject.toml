@@ -1,6 +1,6 @@
 [project]
 name = "knightspiral"
-version = "0.1.0"
+version = "0.2.0"
 description = "Simulate and render competing knight armies on an infinite spiral-numbered chessboard."
 authors = [
     { name = "DJ Stomp", email = "85457381+DJStompZone@users.noreply.github.com" }
@@ -18,13 +18,14 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-dependencies = ["tqdm (>=4.67.3,<5.0.0)"]
+dependencies = []
 
 [project.optional-dependencies]
 progress = ["tqdm>=4.66"]
 
 [project.scripts]
 knightspiral = "knightspiral.cli:entrypoint"
+knightspiral-matrix = "knightspiral.matrix:entrypoint"
 
 [tool.poetry]
 packages = [{ include = "knightspiral" }]
