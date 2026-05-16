@@ -1,3 +1,24 @@
+Metadata-Version: 2.4
+Name: knightspiral
+Version: 0.2.0
+Summary: Simulate and render competing knight armies on an infinite spiral-numbered chessboard.
+License-Expression: MIT
+License-File: LICENSE
+Keywords: knight,spiral,simulation,chess,oeis,numberphile,raster
+Author: DJ Stomp
+Author-email: 85457381+DJStompZone@users.noreply.github.com
+Requires-Python: >=3.12,<4.0
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Provides-Extra: progress
+Requires-Dist: tqdm (>=4.66) ; extra == "progress"
+Description-Content-Type: text/markdown
+
 # Knight Spiral
 
 **Competing knight armies on an infinite spiral chessboard.**
@@ -232,88 +253,3 @@ The matrix runner memoizes full simulation snapshots by team count and turn coun
 
 By default, snapshots live under a boot-scoped directory inside the OS temp folder. That makes them reusable across repeated runs during the same boot without turning your project folder into a pickle landfill. Use `--cache-root` to choose a specific cache location, or `--no-cache` to disable it.
 
-## Quality reports
-
-The project is configured so one pytest command runs the regular tests, benchmark tests, coverage, and Allure result generation:
-
-```bash
-poetry run pytest
-```
-
-That writes:
-
-```text
-reports/allure-results/
-reports/allure-report/
-reports/allure-history/history.jsonl
-reports/coverage-html/index.html
-reports/coverage.xml
-reports/benchmark.json
-reports/artifacts.json
-```
-
-The test suite includes severity-tagged, parameterized simulation profiles and visual render checks. The visual tests attach generated PNGs directly to the matching Allure result, so the report shows the actual raster outputs instead of making you play filename archaeology.
-
-Allure Report 3 is configured by `allurerc.mjs`. The report keeps history in `reports/allure-history/history.jsonl`, so repeated local runs build trend charts and status history instead of acting like every test run was born yesterday.
-
-Install the Python-side reporting tools:
-
-```bash
-poetry install --with dev
-```
-
-Install the Allure 3 CLI with Node:
-
-```bash
-npm install -g allure
-```
-
-If the Allure command is not available, pytest still runs and writes the raw artifacts; it just skips the generated HTML report because obviously it cannot invoke a command that does not exist. Computers remain petty.
-
-Useful variants:
-
-```bash
-poetry run pytest --no-allure-generate
-poetry run pytest --allure-command "npx allure"
-poetry run pytest -m visual
-poetry run pytest -m "intensity and not visual"
-poetry run pytest benchmarks --benchmark-save=baseline
-poetry run pytest benchmarks --benchmark-compare=baseline
-poetry run pyinstrument -r html -o reports/profile.html -m knightspiral.matrix --turns 100k --color-counts 9 --output-dir ../profile-renders --no-cache
-```
-
-For Allure 3 global stdout/stderr attachments, run the whole pytest command through Allure's wrapper:
-
-```bash
-allure run -- poetry run pytest
-```
-
-That wrapper is optional for normal local development, but it captures process-level logs as global attachments in Allure 3.
-
-## Scientific analysis mode
-
-`knightspiral-science` computes higher-level measurements from simulated matrix states and writes a small report bundle.
-
-```bash
-poetry run knightspiral-science --turns 100k,1m,10m --color-counts 3-9 --output-dir ../science --no-progress
-```
-
-Outputs include:
-
-- `summary.md` - human-readable analysis summary
-- `science_results.csv` - flat scalar table for spreadsheets
-- `science_results.jsonl` - nested per-run statistics
-- `snapshots/*.json` - detailed JSON for each analyzed state
-- `charts/*.svg` - pure-SVG charts for density, entropy, dominance, team shares, quadrant composition, and boundary adjacency
-
-The analysis uses the same boot-scoped snapshot cache as `knightspiral-matrix`, so repeated runs can reuse existing simulation states. Connected-component analysis is intentionally capped by `--component-limit` because doing full region topology over ten million occupied squares is how laptops learn religion.
-
-Useful examples:
-
-```bash
-poetry run knightspiral-science --turns 100k,1m --color-counts 2-9 --output-dir ../science
-poetry run knightspiral-science --turns 10m --color-counts 3,4,9 --component-limit 0 --output-dir ../science-heavy
-poetry run knightspiral-science --turns 100k,1m --color-counts 3 --cache-root ../cache --output-dir ../science-3c
-```
-
-When the pytest Allure plugin is installed, `tests/test_science.py` attaches the generated Markdown, CSV, JSON, and SVG chart artifacts to the Allure result.

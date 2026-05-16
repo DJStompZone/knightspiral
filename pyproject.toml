@@ -1,14 +1,14 @@
 [project]
 name = "knightspiral"
 version = "1.0.0"
-description = "Simulate and render competing knight armies on an infinite spiral-numbered chessboard."
+description = "Simulate, render, and analyze competing knight armies on an infinite spiral-numbered chessboard."
 authors = [
     { name = "DJ Stomp", email = "85457381+DJStompZone@users.noreply.github.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
 license = "MIT"
-keywords = ["knight", "spiral", "simulation", "chess", "oeis", "numberphile", "raster"]
+keywords = ["knight", "spiral", "simulation", "chess", "oeis", "numberphile", "raster", "analysis"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
@@ -26,6 +26,7 @@ progress = ["tqdm>=4.66"]
 [project.scripts]
 knightspiral = "knightspiral.cli:entrypoint"
 knightspiral-matrix = "knightspiral.matrix:entrypoint"
+knightspiral-science = "knightspiral.science:entrypoint"
 
 [tool.poetry]
 packages = [{ include = "knightspiral" }]
@@ -61,6 +62,7 @@ markers = [
     "visual: tests that render and attach image artifacts",
     "intensity(level): classifies test intensity for reporting",
 ]
+
 [tool.coverage.run]
 branch = true
 source = ["knightspiral"]
@@ -75,7 +77,7 @@ skip_covered = false
 fail_under = 70
 exclude_lines = [
     "pragma: no cover",
-    "if __name__ == .__main__.",
+    "if __name__ == .__main__.:",
     "raise SystemExit",
     "except KeyboardInterrupt",
 ]
