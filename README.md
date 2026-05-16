@@ -198,7 +198,7 @@ python3 -m pip install -e '.[dev,progress]'
 
 ## License
 
-MIT license. See the [LICENSE](LICENSE) file for more information.
+MIT
 
 ## Experiment matrix renders
 
@@ -231,3 +231,67 @@ The runner also writes `palettes.json`, `matrix_results.csv`, and `matrix_result
 The matrix runner memoizes full simulation snapshots by team count and turn count. The rule state depends on the number of teams, not the display colors, so a cached 4-team simulation can be reused with any 4-color palette.
 
 By default, snapshots live under a boot-scoped directory inside the OS temp folder. That makes them reusable across repeated runs during the same boot without turning your project folder into a pickle landfill. Use `--cache-root` to choose a specific cache location, or `--no-cache` to disable it.
+
+## Quality reports
+
+The project is configured so one pytest command runs the regular tests, benchmark tests, coverage, and Allure result generation:
+
+```bash
+poetry run pytest
+```
+
+That writes:
+
+```text
+reports/allure-results/
+reports/allure-report/
+reports/allure-history/history.jsonl
+reports/coverage-html/index.html
+reports/coverage.xml
+reports/benchmark.json
+reports/artifacts.json
+```
+
+The test suite includes severity-tagged, parameterized simulation profiles and visual render checks. The visual tests attach generated PNGs directly to the matching Allure result, so the report shows the actual 2-color, 3-color, and 9-color raster outputs instead of making you play filename archaeology.
+
+Allure Report 3 is configured by `allurerc.mjs`. The report keeps history in `reports/allure-history/history.jsonl`, so repeated local runs build trend charts and status history instead of acting like every test run was born yesterday.
+
+Install the Python-side reporting tools:
+
+```bash
+poetry add --group dev pytest pytest-cov pytest-benchmark pyinstrument allure-pytest
+```
+
+Install the Allure 3 CLI with Node:
+
+```bash
+npm install -g allure
+```
+
+Then verify:
+
+```bash
+allure --version
+```
+
+If the Allure command is not available, pytest still runs and writes the raw artifacts; it just skips the generated HTML report because obviously it cannot invoke a command that does not exist. Computers remain petty.
+
+Useful variants:
+
+```bash
+poetry run pytest --no-allure-generate
+poetry run pytest --allure-command "npx allure"
+poetry run pytest -m visual
+poetry run pytest -m "intensity and not visual"
+poetry run pytest benchmarks --benchmark-save=baseline
+poetry run pytest benchmarks --benchmark-compare=baseline
+poetry run pyinstrument -r html -o reports/profile.html -m knightspiral.matrix --turns 100k --color-counts 9 --output-dir ../profile-renders --no-cache
+```
+
+For Allure 3 global stdout/stderr attachments, run the whole pytest command through Allure's wrapper:
+
+```bash
+allure run -- poetry run pytest
+```
+
+That wrapper is optional for normal local development, but it captures process-level logs as global attachments in Allure 3.

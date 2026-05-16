@@ -1,6 +1,6 @@
 [project]
 name = "knightspiral"
-version = "0.2.0"
+version = "0.1.0"
 description = "Simulate and render competing knight armies on an infinite spiral-numbered chessboard."
 authors = [
     { name = "DJ Stomp", email = "85457381+DJStompZone@users.noreply.github.com" }
@@ -31,14 +31,64 @@ knightspiral-matrix = "knightspiral.matrix:entrypoint"
 packages = [{ include = "knightspiral" }]
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=8.0"
-pytest-cov = "^7.1.0"
-pytest-benchmark = "^5.2.3"
-pyinstrument = "^5.1.2"
-allure-pytest = "^2.16.0"
+allure-pytest = ">=2.16.0"
+pyinstrument = ">=5.1"
+pytest = ">=9.0"
+pytest-benchmark = ">=5.2"
+pytest-cov = ">=7.0"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+testpaths = ["tests", "benchmarks"]
+norecursedirs = ["reports", ".git", ".venv", "venv", "dist", "build"]
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+    "--cov=knightspiral",
+    "--cov-report=term-missing",
+    "--cov-report=html:reports/coverage-html",
+    "--cov-report=xml:reports/coverage.xml",
+    "--benchmark-json=reports/benchmark.json",
+    "--benchmark-sort=mean",
+    "--alluredir=reports/allure-results",
+    "--clean-alluredir",
+]
+markers = [
+    "benchmark: performance benchmarks managed by pytest-benchmark",
+    "visual: tests that render and attach image artifacts",
+    "intensity(level): classifies test intensity for reporting",
+]
+[tool.coverage.run]
+branch = true
+source = ["knightspiral"]
+omit = [
+    "benchmarks/*",
+    "tests/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 70
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "raise SystemExit",
+    "except KeyboardInterrupt",
+]
+
+[tool.coverage.html]
+directory = "reports/coverage-html"
+
+[tool.coverage.xml]
+output = "reports/coverage.xml"
+
+[tool.pytest-benchmark]
+disable_gc = false
+min_rounds = 5
+min_time = 0.000005
+max_time = 1.0
+sort = "mean"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
