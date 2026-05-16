@@ -1,6 +1,6 @@
 [project]
 name = "knightspiral"
-version = "0.1.0"
+version = "1.0.0"
 description = "Simulate and render competing knight armies on an infinite spiral-numbered chessboard."
 authors = [
     { name = "DJ Stomp", email = "85457381+DJStompZone@users.noreply.github.com" }
