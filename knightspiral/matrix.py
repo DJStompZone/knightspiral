@@ -220,6 +220,28 @@ def run_until(game: KnightSpiralGame, turns: int, *, progress_enabled: bool) -> 
         game.run(remaining, progress_enabled=progress_enabled)
 
 
+def load_best_snapshot_for_target(
+    game: KnightSpiralGame | None,
+    *,
+    color_count: int,
+    turns: int,
+    cache_root: Path,
+    teams: list[Team],
+) -> tuple[KnightSpiralGame | None, bool]:
+    """Load the best useful snapshot for one target without rewinding."""
+    cached = find_best_snapshot(color_count, turns, cache_root)
+    if cached is None:
+        return game, False
+
+    cached_turns, cached_path = cached
+    if game is not None and cached_turns <= game.turn:
+        return game, False
+
+    loaded_game = load_snapshot(cached_path, teams=teams)
+    print(f"CACHE loaded {color_count:02d} colors at {compact_count(cached_turns)} from {cached_path}")
+    return loaded_game, True
+
+
 def render_target(
     game: KnightSpiralGame,
     target: MatrixTarget,
@@ -296,30 +318,30 @@ def run_color_count(args: argparse.Namespace, color_count: int, targets: list[Ma
     if not pending_targets:
         return results
 
-    max_pending_turns = max(target.turns for target in pending_targets)
-    snapshot_loaded = False
-
-    if args.no_cache:
-        game = KnightSpiralGame(teams)
-    else:
-        cached = find_best_snapshot(color_count, max_pending_turns, cache_root)
-        if cached is None:
-            game = KnightSpiralGame(teams)
-        else:
-            cached_turns, cached_path = cached
-            game = load_snapshot(cached_path, teams=teams)
-            snapshot_loaded = True
-            print(f"CACHE loaded {color_count:02d} colors at {compact_count(cached_turns)} from {cached_path}")
-
+    game: KnightSpiralGame | None = None
     pending_by_turn = {target.turns: target for target in pending_targets}
 
     for turns in sorted(pending_by_turn):
         target = pending_by_turn[turns]
         started_at = time.perf_counter()
+        snapshot_loaded = False
+
+        if not args.no_cache:
+            game, snapshot_loaded = load_best_snapshot_for_target(
+                game,
+                color_count=color_count,
+                turns=turns,
+                cache_root=cache_root,
+                teams=teams,
+            )
+
+        if game is None:
+            game = KnightSpiralGame(teams)
+
         run_until(game, turns, progress_enabled=not args.no_progress)
 
         snapshot_saved = False
-        if not args.no_cache:
+        if not args.no_cache and not args.dry_run:
             save_snapshot(game, cache_root)
             snapshot_saved = True
 
@@ -361,7 +383,6 @@ def run_color_count(args: argparse.Namespace, color_count: int, targets: list[Ma
                 snapshot_saved=snapshot_saved,
             )
         )
-        snapshot_loaded = False
 
     return results
 

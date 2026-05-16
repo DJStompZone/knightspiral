@@ -36,6 +36,7 @@ pyinstrument = ">=5.1"
 pytest = ">=9.0"
 pytest-benchmark = ">=5.2"
 pytest-cov = ">=7.0"
+pytest-env = "^1.6.0"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
@@ -49,9 +50,11 @@ addopts = [
     "--cov-report=html:reports/coverage-html",
     "--cov-report=xml:reports/coverage.xml",
     "--benchmark-json=reports/benchmark.json",
+    "--benchmark-min-rounds=10",
+    "--benchmark-min-time=0.000005",
+    "--benchmark-max-time=10.0",
     "--benchmark-sort=mean",
-    "--alluredir=reports/allure-results",
-    "--clean-alluredir",
+    "--alluredir=reports/allure-results"
 ]
 markers = [
     "benchmark: performance benchmarks managed by pytest-benchmark",
@@ -83,12 +86,8 @@ directory = "reports/coverage-html"
 [tool.coverage.xml]
 output = "reports/coverage.xml"
 
-[tool.pytest-benchmark]
-disable_gc = false
-min_rounds = 5
-min_time = 0.000005
-max_time = 1.0
-sort = "mean"
+[tool.pytest_env]
+ALLURE_ENABLE_LEGACY = "1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

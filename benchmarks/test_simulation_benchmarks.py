@@ -14,12 +14,24 @@ from knightspiral.matrix import matrix_teams
 @pytest.mark.parametrize(
     ("turns", "color_count"),
     [
+        (500, 2),
+        (500, 4),
+        (500, 9),
         (1_000, 2),
         (1_000, 4),
         (1_000, 9),
+        (5_000, 2),
+        (5_000, 4),
+        (5_000, 9),
         (10_000, 2),
         (10_000, 4),
         (10_000, 9),
+        (25_000, 2),
+        (25_000, 4),
+        (25_000, 9),
+        (50_000, 2),
+        (50_000, 4),
+        (50_000, 9),
     ],
 )
 def test_simulation_speed(benchmark, turns: int, color_count: int) -> None:

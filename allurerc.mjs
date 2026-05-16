@@ -161,6 +161,13 @@ export default {
         singleFile: false
       }
     },
+    allure2: {
+      options: {
+        reportName: `${reportName} Allure 2 Compatibility`,
+        reportLanguage,
+        singleFile: false
+      }
+    },
     classic: {
       options: {
         reportName: `${reportName} Classic`,
